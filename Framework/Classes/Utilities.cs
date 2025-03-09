@@ -7,13 +7,7 @@ using Kingmaker.UI.ServiceWindow;
 
 #endregion
 
-#region muted warnings
-
-#pragma warning disable IDE0130
-
-#endregion
-
-namespace VanityCameraTweaks.Classes;
+namespace VanityCameraTweaks.Framework.Classes;
 
 internal static class Utilities
 {
