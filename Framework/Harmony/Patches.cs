@@ -1,14 +1,12 @@
 ﻿#region using directives
 
 using System.Reflection;
-using Kingmaker.Visual.CharacterSystem;
+using Kingmaker.Enums;
 using Kingmaker.UI.ServiceWindow;
 using Kingmaker.View.Equipment;
 using Kingmaker.View.Animation;
 using Kingmaker.EntitySystem.Entities;
-using Kingmaker.View;
-
-
+using Kingmaker.Cheats;
 
 #endregion
 
@@ -21,6 +19,11 @@ internal static class Patches
 	[HarmonyPostfix]
 	internal static void RelaxUnarmedMainhandPosture(UnitViewHandsEquipment __instance, ref WeaponAnimationStyle __result)
 	{
+		if (!ModEntry.SettingsInstance.ForceRelaxedPosture)
+		{
+			return;
+		}
+
 		if (!__instance.IsDollRoom)
 		{
 			return;
@@ -43,6 +46,11 @@ internal static class Patches
 	[HarmonyPostfix]
 	internal static void RelaxUnarmedOffhandPosture(UnitViewHandsEquipment __instance, ref WeaponAnimationStyle __result)
 	{
+		if (!ModEntry.SettingsInstance.ForceRelaxedPosture)
+		{
+			return;
+		}
+
 		if (!__instance.IsDollRoom)
 		{
 			return;
@@ -60,13 +68,16 @@ internal static class Patches
 	[HarmonyPostfix]
 	internal static void TranslateDollRoomCamera(UnitEntityData player, DollRoom __instance)
 	{
-		DollCamera cameraInstance = (DollCamera)typeof(DollRoom)
-			.GetField("m_Camera", BindingFlags.NonPublic | BindingFlags.Instance)
-			.GetValue(__instance);
+		if (!Classes.Utilities.IsWithinSizeConstraints(player))
+		{
+			return;
+		}
+
+		DollCamera cameraInstance = Classes.Utilities.GetDollCamera(__instance);
 
 		if (cameraInstance is null)
 		{
-			ModEntry.Log("m_Camera was null.");
+			ModEntry.Log("Could not fetch a DollCamera instance from DollRoom, aborting execution.");
 			return;
 		}
 
@@ -85,7 +96,7 @@ internal static class Patches
 			cameraInstance.transform.position.y, // 586.1129f
 			-1f  // 0.987f
 		);
-		// TODO: consider adapting these translations for each character race
+
 		cameraInstance.transform.position = newCoords;
 	}
 };
