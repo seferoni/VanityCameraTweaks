@@ -33,7 +33,7 @@ internal static class ModEntry
 
 	internal static void LogError(Exception exception)
 	{
-		LoggerInstance?.Log(string.Format("{0} \n {1}", exception.ToString(), exception.StackTrace));
+		LoggerInstance?.Log($"{exception.ToString()} \n {exception.StackTrace}");
 	}
 
 	internal static bool Load(UnityModManager.ModEntry modEntry)

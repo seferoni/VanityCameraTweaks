@@ -5,6 +5,8 @@ using System.Reflection;
 using System.Text.Json;
 using UnityEngine;
 using UnityModManagerNet;
+using VanityCameraTweaks.Framework.Attributes;
+
 
 #endregion
 
@@ -14,6 +16,7 @@ internal static class Builder
 {
 	private static Dictionary<string, string> SettingStrings { get; set; } = null!;
 	private static GUIStyle LabelStyle { get; set; } = null!;
+	private static float AbsoluteWidth { get; } = 300f;
 
 	internal static void Initialise(UnityModManager.ModEntry modEntry)
 	{
@@ -23,7 +26,7 @@ internal static class Builder
 		{
 			fontSize = 14,
 			fontStyle = FontStyle.Bold,
-			normal.textColor = Color.cyan // TODO: placeholder values
+			normal = { textColor = Color.cyan }, // TODO: placeholder values
 		};
 	}
 
@@ -32,19 +35,85 @@ internal static class Builder
 		return settingInstance.GetType().GetProperties();
 	}
 
+	private static UMMIntervalAttribute GetInterval(PropertyInfo property)
+	{
+		return property.GetCustomAttribute<UMMIntervalAttribute>()!;
+	}
+
+	private static UMMRangeAttribute GetRange(PropertyInfo property)
+	{
+		return property.GetCustomAttribute<UMMRangeAttribute>()!;
+	}
+
 	private static void AddFloatSetting(PropertyInfo Property)
 	{
 		string settingName = GetSettingName(Property);
+		UMMIntervalAttribute interval = GetInterval(Property);
+		UMMRangeAttribute range = GetRange(Property);
+
+		GUILayout.BeginHorizontal();
+		{
+			CreateLabel(settingName);
+			CreateSpacer();
+			var sliderSetting = GUILayout.HorizontalSlider(
+				(float)Property.GetValue(ModEntry.SettingsInstance),
+				range.Min,
+				range.Max,
+				GUILayout.Width(AbsoluteWidth)
+			);
+			Property.SetValue(ModEntry.SettingsInstance, sliderSetting);
+			CreateLabel($"{(float)Property.GetValue(ModEntry.SettingsInstance):p0}");
+		}
+		GUILayout.EndHorizontal();
 	}
 
 	private static void AddBoolSetting(PropertyInfo Property)
 	{
 		string settingName = GetSettingName(Property);
+
+		GUILayout.BeginHorizontal();
+		{
+			CreateLabel(settingName);
+			CreateSpacer();
+			bool value = (bool)Property.GetValue(ModEntry.SettingsInstance);
+			var toggleSetting = GUILayout.Toggle(
+				value,
+				$"{value}",
+				GUILayout.Width(AbsoluteWidth)
+			);
+			Property.SetValue(ModEntry.SettingsInstance, toggleSetting);
+		}
+		GUILayout.EndHorizontal();
+	}
+
+	private static void CreateSpacer(float pixels = 10)
+	{
+		GUILayout.Space(pixels);
+	}
+
+	private static void CreateLabel(string text)
+	{
+		GUILayout.Label(text, LabelStyle, GUILayout.ExpandWidth(false));
 	}
 
 	private static void AddIntSetting(PropertyInfo Property)
 	{
 		string settingName = GetSettingName(Property);
+		UMMIntervalAttribute interval = GetInterval(Property);
+		UMMRangeAttribute range = GetRange(Property);
+
+		GUILayout.BeginHorizontal();
+		CreateLabel(settingName);
+		CreateSpacer();
+		var sliderSetting = GUILayout.HorizontalSlider(
+			(int)Property.GetValue(ModEntry.SettingsInstance),
+			(int)range.Min,
+			(int)range.Max,
+			GUILayout.Width(AbsoluteWidth)
+		);
+		Property.SetValue(ModEntry.SettingsInstance, sliderSetting);
+		CreateLabel($"{(int)Property.GetValue(ModEntry.SettingsInstance):p0}");
+		GUILayout.EndHorizontal();
 	}
 
 	private static void CreateSettings(Settings settingInstance)
@@ -58,7 +127,18 @@ internal static class Builder
 
 		foreach(PropertyInfo property in properties)
 		{
-			// TODO: process each property by type, add the appropriate setting
+			switch(property.PropertyType.Name)
+			{
+				case "Single":
+					AddFloatSetting(property);
+					break;
+				case "Boolean":
+					AddBoolSetting(property);
+					break;
+				case "Int32":
+					AddIntSetting(property);
+					break;
+			}
 		}
 	}
 
@@ -68,7 +148,7 @@ internal static class Builder
 	}
 
 	private static string FormatPropertyName(PropertyInfo property)
-	{   // TODO: are we really using camelCase to format our json dictionary keys?
+	{
 		return JsonNamingPolicy.CamelCase.ConvertName(property.Name);
 	}
 
