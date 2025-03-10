@@ -39,11 +39,6 @@ internal static class Builder
 		return properties;
 	}
 
-	private static UMMIntervalAttribute GetInterval(PropertyInfo property)
-	{
-		return property.GetCustomAttribute<UMMIntervalAttribute>()!;
-	}
-
 	private static UMMRangeAttribute GetRange(PropertyInfo property)
 	{
 		return property.GetCustomAttribute<UMMRangeAttribute>()!;
