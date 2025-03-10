@@ -3,6 +3,7 @@
 using System.IO;
 using System.Reflection;
 using System.Text.Json;
+using UnityEngine;
 using UnityModManagerNet;
 
 #endregion
@@ -12,11 +13,18 @@ namespace VanityCameraTweaks.Framework.Integrations.UMM;
 internal static class Builder
 {
 	private static Dictionary<string, string> SettingStrings { get; set; } = null!;
+	private static GUIStyle LabelStyle { get; set; } = null!;
 
 	internal static void Initialise(UnityModManager.ModEntry modEntry)
 	{
 		var jsonFile = File.ReadAllText("Framework/Strings/Settings.json");
 		SettingStrings = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonFile);
+		LabelStyle = new GUIStyle(GUI.skin.label)
+		{
+			fontSize = 14,
+			fontStyle = FontStyle.Bold,
+			normal.textColor = Color.cyan // TODO: placeholder values
+		};
 	}
 
 	internal static PropertyInfo[] GetProperties(Settings settingInstance)
