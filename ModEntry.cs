@@ -53,9 +53,9 @@ internal static class ModEntry
 		return true;
 	}
 
-	static void OnGUI(UnityModManager.ModEntry modEntry)
+	internal static void OnGUI(UnityModManager.ModEntry modEntry)
 	{
-		Builder.BuildSettings(modEntry, SettingsInstance);
+		Builder.BuildSettings();
 	}
 
 	internal static void Initialise(UnityModManager.ModEntry modEntry)

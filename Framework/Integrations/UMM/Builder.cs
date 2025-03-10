@@ -1,6 +1,7 @@
 ﻿#region using directives
 
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using UnityEngine;
@@ -30,9 +31,12 @@ internal static class Builder
 		};
 	}
 
-	internal static PropertyInfo[] GetProperties(Settings settingInstance)
-	{   // TODO: need to account for properties with the UMMIgnoreAttribute
-		return settingInstance.GetType().GetProperties();
+	internal static PropertyInfo[] GetProperties()
+	{
+		var properties = ModEntry.SettingsInstance.GetType().GetProperties()
+			.Where((property) => property.GetCustomAttribute<UMMIgnoreAttribute>() is null)
+			.ToArray();
+		return properties;
 	}
 
 	private static UMMIntervalAttribute GetInterval(PropertyInfo property)
@@ -48,7 +52,6 @@ internal static class Builder
 	private static void AddFloatSetting(PropertyInfo Property)
 	{
 		string settingName = GetSettingName(Property);
-		UMMIntervalAttribute interval = GetInterval(Property);
 		UMMRangeAttribute range = GetRange(Property);
 
 		GUILayout.BeginHorizontal();
@@ -99,7 +102,6 @@ internal static class Builder
 	private static void AddIntSetting(PropertyInfo Property)
 	{
 		string settingName = GetSettingName(Property);
-		UMMIntervalAttribute interval = GetInterval(Property);
 		UMMRangeAttribute range = GetRange(Property);
 
 		GUILayout.BeginHorizontal();
@@ -116,9 +118,9 @@ internal static class Builder
 		GUILayout.EndHorizontal();
 	}
 
-	private static void CreateSettings(Settings settingInstance)
+	private static void CreateSettings()
 	{
-		PropertyInfo[] properties = GetProperties(settingInstance);
+		PropertyInfo[] properties = GetProperties();
 
 		if (properties.Length == 0)
 		{
@@ -152,8 +154,8 @@ internal static class Builder
 		return JsonNamingPolicy.CamelCase.ConvertName(property.Name);
 	}
 
-	internal static void BuildSettings(UnityModManager.ModEntry modEntry, Settings settingInstance)
+	internal static void BuildSettings()
 	{
-		CreateSettings(settingInstance);
+		CreateSettings();
 	}
 };
