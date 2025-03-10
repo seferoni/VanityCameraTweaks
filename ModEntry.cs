@@ -55,7 +55,7 @@ internal static class ModEntry
 
 	static void OnGUI(UnityModManager.ModEntry modEntry)
 	{
-		Builder.BuildSettings(modEntry);
+		Builder.BuildSettings(modEntry, SettingsInstance);
 	}
 
 	internal static void Initialise(UnityModManager.ModEntry modEntry)

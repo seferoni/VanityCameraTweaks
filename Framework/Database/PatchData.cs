@@ -6,7 +6,7 @@ internal static class PatchData
 	{
 		{ "MinZCoord", 0.987f },
 		{ "MaxZCoord", -1.5f },
-		{ "MinYCoord", 586.1129f },
+		{ "MinYCoord", 585f },
 		{ "MaxYCoord", 586.1129f }
 	};
 };
