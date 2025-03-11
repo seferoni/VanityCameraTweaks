@@ -7,7 +7,7 @@ using Kingmaker.EntitySystem.Entities;
 
 #endregion
 
-namespace VanityCameraTweaks.Integrations.Harmony;
+namespace VanityCameraTweaks.Framework.Integrations.Harmony;
 
 [HarmonyPatch]
 internal static class Patches
@@ -65,23 +65,23 @@ internal static class Patches
 	[HarmonyPostfix]
 	internal static void TranslateDollRoomCamera(UnitEntityData player, DollRoom __instance)
 	{
-		if (!Framework.Classes.Utilities.IsWithinSizeConstraints(player))
+		if (!Classes.Utilities.IsWithinSizeConstraints(player))
 		{
 			return;
 		}
 
-		DollCamera cameraInstance = Framework.Classes.Utilities.GetDollCamera(__instance);
+		DollCamera cameraInstance = Classes.Utilities.GetDollCamera(__instance);
 
 		if (cameraInstance is null)
 		{
-			ModEntry.Log("Could not fetch a DollCamera instance from DollRoom, aborting execution.");
+			ModEntry.Log("Could not fetch a DollCamera instance from DollRoom, aborting execution."); // TODO: this needs to fetch from Debug.json
 			return;
 		}
 
 		Vector3 newCoords = new Vector3
 		(
 			cameraInstance.transform.position.x,
-			cameraInstance.transform.position.y,
+			Classes.Utilities.GetCameraYBySize(player),
 			ModEntry.SettingsInstance.CameraDistance
 		);
 

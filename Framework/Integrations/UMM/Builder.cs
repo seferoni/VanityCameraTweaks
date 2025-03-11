@@ -27,14 +27,14 @@ internal static class Builder
 		{
 			fontSize = 14,
 			fontStyle = FontStyle.Bold,
-			normal = { textColor = Color.cyan }, // TODO: placeholder values
+			normal = { textColor = Color.cyan } // TODO: placeholder values
 		};
 	}
 
 	internal static PropertyInfo[] GetProperties()
 	{
 		var properties = ModEntry.SettingsInstance.GetType().GetProperties()
-			.Where((property) => property.GetCustomAttribute<UMMIgnoreAttribute>() is null)
+			.Where((property) => property.GetCustomAttribute<UMMIncludeAttribute>() is not null)
 			.ToArray();
 		return properties;
 	}
@@ -141,7 +141,7 @@ internal static class Builder
 
 	private static string GetSettingName(PropertyInfo property)
 	{
-		return SettingStrings[FormatPropertyName(property)];
+		return SettingStrings[$"{FormatPropertyName(property)}Name"];
 	}
 
 	private static string FormatPropertyName(PropertyInfo property)
