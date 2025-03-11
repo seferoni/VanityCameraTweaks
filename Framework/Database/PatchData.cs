@@ -2,7 +2,7 @@
 
 internal static class PatchData
 {
-	internal static readonly TValue GetValue(string key) => key switch
+	internal static object GetValue(string key) => key switch
 	{
 		"ForceRelaxedPostureDefault" => true,
 		"MeshCameraOrientedMinY" => 1.4f,
@@ -10,5 +10,5 @@ internal static class PatchData
 		"CameraMinY" => 585f,
 		"CameraMaxY" => 586.1129f,
 		_ => throw new KeyNotFoundException()
-	}
+	};
 };
