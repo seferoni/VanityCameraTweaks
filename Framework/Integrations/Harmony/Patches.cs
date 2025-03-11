@@ -77,11 +77,13 @@ internal static class Patches
 	{
 		if (!ModEntry.ModEnabledState)
 		{
+			ModEntry.Log("Mod is not enabled.");
 			return;
 		}
 
-		if (!Classes.Utilities.IsWithinSizeConstraints(player))
+		if (Classes.Utilities.ExceedsSizeConstraints(player))
 		{
+			ModEntry.Log("Character is not within size constraints.");
 			return;
 		}
 

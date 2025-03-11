@@ -68,6 +68,10 @@ internal static class ModEntry
 		SettingsInstance = Settings.Load<Settings>(modEntry);
 		HarmonyInstance = new Harmony(modEntry.Info.Id);
 		HarmonyInstance.PatchAll();
+
+		modEntry.OnSaveGUI = OnSaveGUI;
+		modEntry.OnToggle = OnToggle;
+		modEntry.OnGUI = OnGUI;
 	}
 
 	internal static bool OnToggle(UnityModManager.ModEntry modEntry, bool toggleState)

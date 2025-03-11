@@ -12,7 +12,7 @@ namespace VanityCameraTweaks.Framework.Classes;
 
 internal static class Utilities
 {
-	internal static bool IsWithinSizeConstraints(UnitEntityData player)
+	internal static bool ExceedsSizeConstraints(UnitEntityData player)
 	{
 		return player.Descriptor.State.Size >= Size.Large || player.Descriptor.State.Size <= Size.Tiny;
 	}
