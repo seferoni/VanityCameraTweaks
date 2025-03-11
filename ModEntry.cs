@@ -42,7 +42,6 @@ internal static class ModEntry
 		{
 			modEntry.OnToggle = OnToggle;
 			Initialise(modEntry);
-			Builder.Initialise(modEntry);
 		}
 		catch(Exception exception)
 		{
@@ -55,6 +54,7 @@ internal static class ModEntry
 
 	internal static void OnGUI(UnityModManager.ModEntry modEntry)
 	{
+		Builder.Initialise(modEntry);
 		Builder.BuildSettings();
 	}
 

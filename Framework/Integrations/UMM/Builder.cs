@@ -144,7 +144,7 @@ internal static class Builder
 
 	private static string FormatPropertyName(PropertyInfo property)
 	{
-		return JsonNamingPolicy.CamelCase.ConvertName(property.Name);
+		return property.Name;
 	}
 
 	internal static void BuildSettings()
