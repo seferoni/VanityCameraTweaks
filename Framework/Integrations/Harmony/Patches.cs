@@ -74,7 +74,7 @@ internal static class Patches
 
 		if (cameraInstance is null)
 		{
-			ModEntry.Log("Could not fetch a DollCamera instance from DollRoom, aborting execution."); // TODO: this needs to fetch from Debug.json
+			ModEntry.Log("Could not fetch a DollCamera instance from DollRoom, aborting execution.");
 			return;
 		}
 
@@ -85,6 +85,7 @@ internal static class Patches
 			ModEntry.SettingsInstance.CameraDistance
 		);
 
+		ModEntry.Log($"Got a CameraDistance of {ModEntry.SettingsInstance.CameraDistance}.");
 		cameraInstance.transform.position = newCoords;
 	}
 };

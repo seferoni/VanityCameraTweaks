@@ -19,19 +19,22 @@ internal static class Utilities
 
 	internal static float GetNormalisedYScalar(float yValue)
 	{
-		return Mathf.InverseLerp(
-			(float)PatchData.DollCameraZoomParams["MeshCameraOrientedMinY"],
-			(float)PatchData.DollCameraZoomParams["MeshCameraOrientedMaxY"], 
+		return  Mathf.InverseLerp(
+			(float)PatchData.GetValue("MeshCameraOrientedMinY"),
+			(float)PatchData.GetValue("MeshCameraOrientedMaxY"),
 			yValue);
 	}
 
 	internal static float GetCameraYBySize(UnitEntityData player)
 	{
 		float yBounds = GetNormalisedYScalar(player.View.CameraOrientedBoundsSize.y);
-		return Mathf.Lerp(
-			(float)PatchData.DollCameraZoomParams["CameraMinY"],
-			(float)PatchData.DollCameraZoomParams["CameraMaxY"],
+		ModEntry.Log($"Got a normalised y-scalar of {yBounds}");
+		float cameraHeight = Mathf.Lerp(
+			(float)PatchData.GetValue("CameraMinY"),
+			(float)PatchData.GetValue("CameraMaxY"),
 			yBounds);
+		ModEntry.Log($"Got a camera height of {cameraHeight}");
+		return cameraHeight;
 	}
 
 	internal static DollCamera GetDollCamera(DollRoom dollRoom)
