@@ -3,7 +3,6 @@
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text.Json;
 using UnityEngine;
 using UnityModManagerNet;
 using VanityCameraTweaks.Framework.Attributes;
@@ -21,8 +20,7 @@ internal static class Builder
 
 	internal static void Initialise(UnityModManager.ModEntry modEntry)
 	{
-		var jsonFile = File.ReadAllText("Framework/Strings/Settings.json");
-		SettingStrings = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonFile);
+		// TODO: initialise SettingStrings here
 		LabelStyle = new GUIStyle(GUI.skin.label)
 		{
 			fontSize = 14,
