@@ -48,14 +48,18 @@ internal static class ModEntry
 			LogError(exception);
 			throw (exception);
 		}
-		
+
 		return true;
 	}
 
 	internal static void OnGUI(UnityModManager.ModEntry modEntry)
 	{
-		Builder.Initialise(modEntry);
-		Builder.BuildSettings();
+		SettingsInstance.Draw(modEntry);
+	}
+
+	internal static void OnSaveGUI(UnityModManager.ModEntry modEntry)
+	{
+		SettingsInstance.Save(modEntry);
 	}
 
 	internal static void Initialise(UnityModManager.ModEntry modEntry)

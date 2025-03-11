@@ -16,6 +16,11 @@ internal static class Patches
 	[HarmonyPostfix]
 	internal static void RelaxUnarmedMainhandPosture(UnitViewHandsEquipment __instance, ref WeaponAnimationStyle __result)
 	{
+		if (!ModEntry.ModEnabledState)
+		{
+			return;
+		}
+
 		if (!ModEntry.SettingsInstance.ForceRelaxedPosture)
 		{
 			return;
@@ -43,6 +48,11 @@ internal static class Patches
 	[HarmonyPostfix]
 	internal static void RelaxUnarmedOffhandPosture(UnitViewHandsEquipment __instance, ref WeaponAnimationStyle __result)
 	{
+		if (!ModEntry.ModEnabledState)
+		{
+			return;
+		}
+
 		if (!ModEntry.SettingsInstance.ForceRelaxedPosture)
 		{
 			return;
@@ -65,6 +75,11 @@ internal static class Patches
 	[HarmonyPostfix]
 	internal static void TranslateDollRoomCamera(UnitEntityData player, DollRoom __instance)
 	{
+		if (!ModEntry.ModEnabledState)
+		{
+			return;
+		}
+
 		if (!Classes.Utilities.IsWithinSizeConstraints(player))
 		{
 			return;
