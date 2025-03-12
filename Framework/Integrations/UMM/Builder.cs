@@ -18,15 +18,33 @@ internal static class Builder
 	private static GUIStyle LabelStyle { get; set; } = null!;
 	private static float AbsoluteWidth { get; } = 300f;
 
-	internal static void Initialise(UnityModManager.ModEntry modEntry)
+	internal static void InitialiseStrings()
 	{
-		SettingStrings = JObject.Parse(File.ReadAllText("Strings/Settings.json"));
+		string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Strings/Settings.json");
+		SettingStrings = JObject.Parse(File.ReadAllText(path));
+	}
+
+	internal static void CreateDescriptionElement(PropertyInfo property)
+	{
+		string settingDescription = GetSettingDescription(property);
+		GUILayout.BeginVertical();
+		{
+			CreateSpacer(5);
+			CreateLabel(settingDescription);
+		}
+		GUILayout.EndVertical();
+	}
+
+	internal static void Build()
+	{
 		LabelStyle = new GUIStyle(GUI.skin.label)
 		{
-			fontSize = 14,
+			fontSize = 12,
 			fontStyle = FontStyle.Bold,
-			normal = { textColor = Color.cyan } // TODO: placeholder values
+			normal = { textColor = Color.grey }
 		};
+		InitialiseStrings();
+		CreateSettings();
 	}
 
 	internal static PropertyInfo[] GetProperties()
@@ -42,48 +60,46 @@ internal static class Builder
 		return property.GetCustomAttribute<UMMRangeAttribute>()!;
 	}
 
-	private static void AddFloatSetting(PropertyInfo Property)
+	private static void AddFloatSetting(PropertyInfo property)
 	{
-		string settingName = GetSettingName(Property);
-		string settingDescription = GetSettingDescription(Property);
-		UMMRangeAttribute range = GetRange(Property);
+		string settingName = GetSettingName(property);
+		UMMRangeAttribute range = GetRange(property);
 
 		GUILayout.BeginHorizontal();
 		{
 			CreateLabel(settingName);
 			CreateSpacer();
 			var sliderSetting = GUILayout.HorizontalSlider(
-				(float)Property.GetValue(ModEntry.SettingsInstance),
+				(float)property.GetValue(ModEntry.SettingsInstance),
 				range.Min,
 				range.Max,
 				GUILayout.Width(AbsoluteWidth)
 			);
-			Property.SetValue(ModEntry.SettingsInstance, sliderSetting);
-			CreateLabel($"{(float)Property.GetValue(ModEntry.SettingsInstance):p0}");
-			CreateLabel(settingDescription);
+			property.SetValue(ModEntry.SettingsInstance, sliderSetting);
+			CreateLabel($"{(float)property.GetValue(ModEntry.SettingsInstance):p0}");
 		}
 		GUILayout.EndHorizontal();
+		CreateDescriptionElement(property);
 	}
 
-	private static void AddBoolSetting(PropertyInfo Property)
+	private static void AddBoolSetting(PropertyInfo property)
 	{
-		string settingName = GetSettingName(Property);
-		string settingDescription = GetSettingDescription(Property);
+		string settingName = GetSettingName(property);
 
 		GUILayout.BeginHorizontal();
 		{
 			CreateLabel(settingName);
 			CreateSpacer();
-			bool value = (bool)Property.GetValue(ModEntry.SettingsInstance);
+			bool value = (bool)property.GetValue(ModEntry.SettingsInstance);
 			var toggleSetting = GUILayout.Toggle(
 				value,
 				$"{value}",
 				GUILayout.Width(AbsoluteWidth)
 			);
-			Property.SetValue(ModEntry.SettingsInstance, toggleSetting);
-			CreateLabel(settingDescription);
+			property.SetValue(ModEntry.SettingsInstance, toggleSetting);
 		}
 		GUILayout.EndHorizontal();
+		CreateDescriptionElement(property);
 	}
 
 	private static void CreateSpacer(float pixels = 10)
@@ -96,27 +112,26 @@ internal static class Builder
 		GUILayout.Label(text, LabelStyle, GUILayout.ExpandWidth(false));
 	}
 
-	private static void AddIntSetting(PropertyInfo Property)
+	private static void AddIntSetting(PropertyInfo property)
 	{
-		string settingName = GetSettingName(Property);
-		string settingDescription = GetSettingDescription(Property);
-		UMMRangeAttribute range = GetRange(Property);
+		string settingName = GetSettingName(property);
+		UMMRangeAttribute range = GetRange(property);
 
 		GUILayout.BeginHorizontal();
 		{
 			CreateLabel(settingName);
 			CreateSpacer();
 			var sliderSetting = GUILayout.HorizontalSlider(
-				(int)Property.GetValue(ModEntry.SettingsInstance),
+				(int)property.GetValue(ModEntry.SettingsInstance),
 				(int)range.Min,
 				(int)range.Max,
 				GUILayout.Width(AbsoluteWidth)
 			);
-			Property.SetValue(ModEntry.SettingsInstance, sliderSetting);
-			CreateLabel($"{(int)Property.GetValue(ModEntry.SettingsInstance):p0}");
-			CreateLabel(settingDescription);
+			property.SetValue(ModEntry.SettingsInstance, sliderSetting);
+			CreateLabel($"{(int)property.GetValue(ModEntry.SettingsInstance):p0}");
 		}
 		GUILayout.EndHorizontal();
+		CreateDescriptionElement(property);
 	}
 
 	private static void CreateSettings()
@@ -158,10 +173,5 @@ internal static class Builder
 	private static string FormatPropertyName(PropertyInfo property)
 	{
 		return property.Name;
-	}
-
-	internal static void BuildSettings()
-	{
-		CreateSettings();
 	}
 };

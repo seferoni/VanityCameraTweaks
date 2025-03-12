@@ -1,3 +1,7 @@
 {
+	"ZoomFineOffsetName": "Zoom Fine Offset",
+	"ZoomFineOffsetDescription": "Fine adjustment for zooming in and out.",
 
+	"ForceRelaxedPostureName": "Force Relaxed Posture",
+	"ForceRelaxedPostureDescription": "Forces the current doll to use a more relaxed posture when unarmed. Fixes the raised off-hand/main-hand animation bug. Effects all player instances."
 }

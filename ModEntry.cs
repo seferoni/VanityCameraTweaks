@@ -60,7 +60,7 @@ internal static class ModEntry
 
 	internal static void OnGUI(UnityModManager.ModEntry modEntry)
 	{
-		// TODO: implement settings
+		Builder.Build();
 	}
 
 	internal static void OnSaveGUI(UnityModManager.ModEntry modEntry)

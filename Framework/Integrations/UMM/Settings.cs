@@ -8,8 +8,7 @@ using VanityCameraTweaks.Framework.Database;
 namespace VanityCameraTweaks.Framework.Integrations.UMM;
 
 public sealed class Settings : UnityModManager.ModSettings
-{   // TODO: need labels that serve as descriptions for each setting
-	// TODO: need to have localisable strings for each setting
+{
 	[UMMRange(0f, 1f)]
 	[UMMInclude]
 	public float ZoomFineOffset { get; set; } = 0f;

@@ -82,7 +82,6 @@ internal static class Patches
 			return;
 		}
 
-		PatchData.ZoomScalar = 0f;
 		PatchData.DollCameraInstance = cameraInstance;
 
 		if (!ModEntry.ModEnabledState)
@@ -93,6 +92,16 @@ internal static class Patches
 		}
 
 		cameraInstance.transform.position = Utilities.GetTranslatedCoordinatesByPlayer(player);
+	}
+
+	[HarmonyPatch(typeof(DollRoom), "Cleanup")]
+	[HarmonyPostfix]
+	internal static void OnCleanup()
+	{
+		PatchData.ZoomScalar = 0f;
+		PatchData.DollCameraInstance = null;
+		PatchData.DollInstance = null;
+		ModEntry.DebugLog("Cleanup complete, resetting parameters.");
 	}
 
 	[HarmonyPatch(typeof(DollRoomCharacterController), "OnScroll")]
@@ -109,7 +118,7 @@ internal static class Patches
 			return;
 		}
 
-		PatchData.ZoomScalar += eventData.scrollDelta.y * 0.1f;
+		PatchData.ZoomScalar += eventData.scrollDelta.y * -0.1f;
 		PatchData.DollCameraInstance.transform.position = Utilities.InterpolateCameraCoordinatesByScalar(PatchData.ZoomScalar, PatchData.DollInstance);
 	}
 };
