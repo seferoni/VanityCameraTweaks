@@ -46,7 +46,7 @@ internal static class ModEntry
 		catch(Exception exception)
 		{
 			LogError(exception);
-			throw (exception);
+			throw exception;
 		}
 
 		return true;

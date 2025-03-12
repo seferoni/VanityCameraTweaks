@@ -6,12 +6,13 @@ using VanityCameraTweaks.Framework.Database;
 
 namespace VanityCameraTweaks.Framework.Integrations.UMM;
 
-public sealed class Settings : UnityModManager.ModSettings, IDrawable
+public sealed class Settings :
+	UnityModManager.ModSettings,
+	IDrawable
 {
+	[Draw("Zoom Fine Offset", DrawType.Slider, Min = 0f, Max = 1f)] public float ZoomFineOffset = 0f;
 
-	[Draw("Camera Distance", DrawType.Slider, Min  = -1.5f, Max = 1f)] public float CameraDistance = -0.5f;
-
-	[Draw("Force Relaxed Posture")] public bool ForceRelaxedPosture = true;
+	[Draw("Force Relaxed Posture When Unarmed")] public bool ForceRelaxedPosture = true;
 
 	public void OnChange()
 	{

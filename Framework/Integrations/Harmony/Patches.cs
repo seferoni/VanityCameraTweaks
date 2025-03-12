@@ -4,6 +4,8 @@ using Kingmaker.UI.ServiceWindow;
 using Kingmaker.View.Equipment;
 using Kingmaker.View.Animation;
 using Kingmaker.EntitySystem.Entities;
+using UnityEngine.EventSystems;
+using VanityCameraTweaks.Framework.Database;
 
 #endregion
 
@@ -12,6 +14,17 @@ namespace VanityCameraTweaks.Framework.Integrations.Harmony;
 [HarmonyPatch]
 internal static class Patches
 {
+	private static float zoomScalar = 0f;
+
+	internal static float ZoomScalar
+	{
+		get => zoomScalar;
+		set => zoomScalar = Mathf.Clamp(value, 0f, 1f);
+	}
+	internal static DollCamera DollCameraInstance { get; set; } = null!;
+	internal static UnitEntityData DollInstance { get; set; } = null!;
+	
+
 	[HarmonyPatch(typeof(UnitViewHandsEquipment), "get_ActiveMainHandWeaponStyle")]
 	[HarmonyPostfix]
 	internal static void RelaxUnarmedMainhandPosture(UnitViewHandsEquipment __instance, ref WeaponAnimationStyle __result)
@@ -26,12 +39,7 @@ internal static class Patches
 			return;
 		}
 
-		if (!__instance.IsDollRoom)
-		{
-			return;
-		}
-
-		if (__result != WeaponAnimationStyle.Fist)
+		if (!Classes.Utilities.IsWeaponAnimationViable(__result))
 		{
 			return;
 		}
@@ -58,12 +66,7 @@ internal static class Patches
 			return;
 		}
 
-		if (!__instance.IsDollRoom)
-		{
-			return;
-		}
-
-		if (__result != WeaponAnimationStyle.Fist)
+		if (!Classes.Utilities.IsWeaponAnimationViable(__result))
 		{
 			return;
 		}
@@ -75,18 +78,12 @@ internal static class Patches
 	[HarmonyPostfix]
 	internal static void TranslateDollRoomCamera(UnitEntityData player, DollRoom __instance)
 	{
-		if (!ModEntry.ModEnabledState)
-		{
-			ModEntry.Log("Mod is not enabled.");
-			return;
-		}
-
 		if (Classes.Utilities.ExceedsSizeConstraints(player))
 		{
-			ModEntry.Log("Character is not within size constraints.");
 			return;
 		}
 
+		DollInstance = player;
 		DollCamera cameraInstance = Classes.Utilities.GetDollCamera(__instance);
 
 		if (cameraInstance is null)
@@ -95,14 +92,32 @@ internal static class Patches
 			return;
 		}
 
-		Vector3 newCoords = new Vector3
-		(
-			cameraInstance.transform.position.x,
-			Classes.Utilities.GetCameraYBySize(player),
-			ModEntry.SettingsInstance.CameraDistance
-		);
+		DollCameraInstance = cameraInstance;
 
-		ModEntry.Log($"Got a CameraDistance of {ModEntry.SettingsInstance.CameraDistance}.");
-		cameraInstance.transform.position = newCoords;
+		if (!ModEntry.ModEnabledState)
+		{
+			cameraInstance.transform.position = Classes.Utilities.GetDefaultCoordinates();
+			return;
+		}
+
+		cameraInstance.transform.position = Classes.Utilities.GetTranslatedCoordinatesByPlayer(player);
+	}
+
+	[HarmonyPatch(typeof(DollRoomCharacterController), "OnScroll")]
+	[HarmonyPostfix]
+	internal static void OnZoom(PointerEventData eventData)
+	{
+		if (!ModEntry.ModEnabledState)
+		{
+			return;
+		}
+
+		if (DollInstance is null || DollCameraInstance is null)
+		{
+			return;
+		}
+
+		ZoomScalar += eventData.scrollDelta.y * 0.1f;
+		DollCameraInstance.transform.position = Classes.Utilities.InterpolateCameraCoordinatesByScalar(ZoomScalar, DollInstance);
 	}
 };
