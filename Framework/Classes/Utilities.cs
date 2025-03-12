@@ -6,6 +6,7 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UI.ServiceWindow;
 using VanityCameraTweaks.Framework.Database;
 using Kingmaker.View.Animation;
+using VanityCameraTweaks.Framework.Attributes;
 
 #endregion
 
@@ -18,27 +19,10 @@ internal static class Utilities
 		return player.Descriptor.State.Size >= Size.Large || player.Descriptor.State.Size <= Size.Tiny;
 	}
 
-	internal static Vector3 InterpolateCameraCoordinatesByScalar(float zoomScalar, UnitEntityData playerInstance)
-	{
-		return Vector3.Lerp(
-			GetTranslatedCoordinatesByPlayer(playerInstance),
-			GetDefaultCoordinates(),
-			zoomScalar
-		);
-	}
-
-	internal static Vector3 GetDefaultCoordinates()
-	{
-		return new Vector3(
-			(float)PatchData.GetValue("CameraDefaultX"),
-			(float)PatchData.GetValue("CameraDefaultY"),
-			(float)PatchData.GetValue("CameraDefaultZ"));
-	}
-
 	internal static Vector3 GetTranslatedCoordinatesByPlayer(UnitEntityData playerInstance)
 	{
 		return new Vector3(
-			(float)PatchData.GetValue("CameraDefaultX"),
+			PatchData.CameraDefaults.x,
 			GetCameraYPosByPlayer(playerInstance),
 			GetCameraZPosByPlayer(playerInstance)
 		);
@@ -47,16 +31,16 @@ internal static class Utilities
 	internal static float GetZoomFineOffset()
 	{
 		return -Mathf.Lerp(
-			(float)PatchData.GetValue("ZoomFineOffsetMin"),
-			(float)PatchData.GetValue("ZoomFineOffsetMax"),
+			PatchData.ZoomFineOffset.Min,
+			PatchData.ZoomFineOffset.Max,
 			ModEntry.SettingsInstance.ZoomFineOffset);
 	}
 
 	internal static float GetNormalisedYPosScalar(float yValue)
 	{
 		return Mathf.InverseLerp(
-			(float)PatchData.GetValue("MeshCameraOrientedMinY"),
-			(float)PatchData.GetValue("MeshCameraOrientedMaxY"),
+			PatchData.MeshCameraOrientedY.Min,
+			PatchData.MeshCameraOrientedY.Max,
 			yValue);
 	}
 
@@ -64,18 +48,17 @@ internal static class Utilities
 	{
 		float yBounds = GetNormalisedYPosScalar(player.View.CameraOrientedBoundsSize.y);
 		float cameraHeight = Mathf.Lerp(
-			(float)PatchData.GetValue("CameraNominalMinY"),
-			(float)PatchData.GetValue("CameraNominalMaxY"),
+			PatchData.CameraNominalY.Min,
+			PatchData.CameraNominalY.Max,
 			yBounds);
-		ModEntry.Log($"Got a camera height of {cameraHeight}");
+		ModEntry.DebugLog($"Got a camera height of {cameraHeight} with a y-scalar of {yBounds}.");
 		return cameraHeight;
 	}
 
 	internal static float GetCameraZPosByPlayer(UnitEntityData player)
 	{
 		string playerSize = player.Descriptor.State.Size.ToString();
-		ModEntry.Log($"Got a player size of {playerSize}");
-		float nominalZoom = (float)PatchData.GetValue($"{playerSize}DollCameraZ");
+		float nominalZoom = PatchData.DollCameraZ[playerSize];
 		return nominalZoom + GetZoomFineOffset();
 	}
 
@@ -84,6 +67,15 @@ internal static class Utilities
 		return (DollCamera)typeof(DollRoom)
 			.GetField("m_Camera", BindingFlags.NonPublic | BindingFlags.Instance)
 			.GetValue(dollRoom);
+	}
+
+	internal static Vector3 InterpolateCameraCoordinatesByScalar(float zoomScalar, UnitEntityData playerInstance)
+	{
+		return Vector3.Lerp(
+			GetTranslatedCoordinatesByPlayer(playerInstance),
+			PatchData.CameraDefaults,
+			zoomScalar
+		);
 	}
 
 	internal static bool IsWeaponAnimationViable(WeaponAnimationStyle animationStyle)

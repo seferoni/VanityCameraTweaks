@@ -14,17 +14,6 @@ namespace VanityCameraTweaks.Framework.Integrations.Harmony;
 [HarmonyPatch]
 internal static class Patches
 {
-	private static float zoomScalar = 0f;
-
-	internal static float ZoomScalar
-	{
-		get => zoomScalar;
-		set => zoomScalar = Mathf.Clamp(value, 0f, 1f);
-	}
-	internal static DollCamera DollCameraInstance { get; set; } = null!;
-	internal static UnitEntityData DollInstance { get; set; } = null!;
-
-
 	[HarmonyPatch(typeof(UnitViewHandsEquipment), "get_ActiveMainHandWeaponStyle")]
 	[HarmonyPostfix]
 	internal static void RelaxUnarmedMainhandPosture(UnitViewHandsEquipment __instance, ref WeaponAnimationStyle __result)
@@ -39,7 +28,7 @@ internal static class Patches
 			return;
 		}
 
-		if (!Classes.Utilities.IsWeaponAnimationViable(__result))
+		if (!Utilities.IsWeaponAnimationViable(__result))
 		{
 			return;
 		}
@@ -66,7 +55,7 @@ internal static class Patches
 			return;
 		}
 
-		if (!Classes.Utilities.IsWeaponAnimationViable(__result))
+		if (!Utilities.IsWeaponAnimationViable(__result))
 		{
 			return;
 		}
@@ -78,13 +67,14 @@ internal static class Patches
 	[HarmonyPostfix]
 	internal static void TranslateDollRoomCamera(UnitEntityData player, DollRoom __instance)
 	{
-		if (Classes.Utilities.ExceedsSizeConstraints(player))
+		if (Utilities.ExceedsSizeConstraints(player))
 		{
+			ModEntry.DebugLog("Doll model exceeds size stipulations, aborting execution.");
 			return;
 		}
 
-		DollInstance = player;
-		DollCamera cameraInstance = Classes.Utilities.GetDollCamera(__instance);
+		PatchData.DollInstance = player;
+		DollCamera cameraInstance = Utilities.GetDollCamera(__instance);
 
 		if (cameraInstance is null)
 		{
@@ -92,16 +82,17 @@ internal static class Patches
 			return;
 		}
 
-		ZoomScalar = 0f;
-		DollCameraInstance = cameraInstance;
+		PatchData.ZoomScalar = 0f;
+		PatchData.DollCameraInstance = cameraInstance;
 
 		if (!ModEntry.ModEnabledState)
 		{
-			cameraInstance.transform.position = Classes.Utilities.GetDefaultCoordinates();
+			ModEntry.DebugLog("Mod is disabled, resetting camera transform.");
+			cameraInstance.transform.position = PatchData.CameraDefaults;
 			return;
 		}
 
-		cameraInstance.transform.position = Classes.Utilities.GetTranslatedCoordinatesByPlayer(player);
+		cameraInstance.transform.position = Utilities.GetTranslatedCoordinatesByPlayer(player);
 	}
 
 	[HarmonyPatch(typeof(DollRoomCharacterController), "OnScroll")]
@@ -113,12 +104,12 @@ internal static class Patches
 			return;
 		}
 
-		if (DollInstance is null || DollCameraInstance is null)
+		if (PatchData.DollInstance is null || PatchData.DollCameraInstance is null)
 		{
 			return;
 		}
 
-		ZoomScalar += eventData.scrollDelta.y * 0.1f;
-		DollCameraInstance.transform.position = Classes.Utilities.InterpolateCameraCoordinatesByScalar(ZoomScalar, DollInstance);
+		PatchData.ZoomScalar += eventData.scrollDelta.y * 0.1f;
+		PatchData.DollCameraInstance.transform.position = Utilities.InterpolateCameraCoordinatesByScalar(PatchData.ZoomScalar, PatchData.DollInstance);
 	}
 };

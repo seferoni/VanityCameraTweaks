@@ -1,0 +1,167 @@
+﻿#region using directives
+
+using Kingmaker.UI.SettingsUI;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using VanityCameraTweaks.Framework.Attributes;
+
+#endregion
+
+namespace VanityCameraTweaks.Framework.Integrations.UMM;
+
+internal static class Builder
+{
+	private static JObject SettingStrings { get; set; } = null!;
+	private static GUIStyle LabelStyle { get; set; } = null!;
+	private static float AbsoluteWidth { get; } = 300f;
+
+	internal static void Initialise(UnityModManager.ModEntry modEntry)
+	{
+		SettingStrings = JObject.Parse(File.ReadAllText("Strings/Settings.json"));
+		LabelStyle = new GUIStyle(GUI.skin.label)
+		{
+			fontSize = 14,
+			fontStyle = FontStyle.Bold,
+			normal = { textColor = Color.cyan } // TODO: placeholder values
+		};
+	}
+
+	internal static PropertyInfo[] GetProperties()
+	{
+		var properties = ModEntry.SettingsInstance.GetType().GetProperties()
+			.Where((property) => property.GetCustomAttribute<UMMIncludeAttribute>() is not null)
+			.ToArray();
+		return properties;
+	}
+
+	private static UMMRangeAttribute GetRange(PropertyInfo property)
+	{
+		return property.GetCustomAttribute<UMMRangeAttribute>()!;
+	}
+
+	private static void AddFloatSetting(PropertyInfo Property)
+	{
+		string settingName = GetSettingName(Property);
+		string settingDescription = GetSettingDescription(Property);
+		UMMRangeAttribute range = GetRange(Property);
+
+		GUILayout.BeginHorizontal();
+		{
+			CreateLabel(settingName);
+			CreateSpacer();
+			var sliderSetting = GUILayout.HorizontalSlider(
+				(float)Property.GetValue(ModEntry.SettingsInstance),
+				range.Min,
+				range.Max,
+				GUILayout.Width(AbsoluteWidth)
+			);
+			Property.SetValue(ModEntry.SettingsInstance, sliderSetting);
+			CreateLabel($"{(float)Property.GetValue(ModEntry.SettingsInstance):p0}");
+			CreateLabel(settingDescription);
+		}
+		GUILayout.EndHorizontal();
+	}
+
+	private static void AddBoolSetting(PropertyInfo Property)
+	{
+		string settingName = GetSettingName(Property);
+		string settingDescription = GetSettingDescription(Property);
+
+		GUILayout.BeginHorizontal();
+		{
+			CreateLabel(settingName);
+			CreateSpacer();
+			bool value = (bool)Property.GetValue(ModEntry.SettingsInstance);
+			var toggleSetting = GUILayout.Toggle(
+				value,
+				$"{value}",
+				GUILayout.Width(AbsoluteWidth)
+			);
+			Property.SetValue(ModEntry.SettingsInstance, toggleSetting);
+			CreateLabel(settingDescription);
+		}
+		GUILayout.EndHorizontal();
+	}
+
+	private static void CreateSpacer(float pixels = 10)
+	{
+		GUILayout.Space(pixels);
+	}
+
+	private static void CreateLabel(string text)
+	{
+		GUILayout.Label(text, LabelStyle, GUILayout.ExpandWidth(false));
+	}
+
+	private static void AddIntSetting(PropertyInfo Property)
+	{
+		string settingName = GetSettingName(Property);
+		string settingDescription = GetSettingDescription(Property);
+		UMMRangeAttribute range = GetRange(Property);
+
+		GUILayout.BeginHorizontal();
+		{
+			CreateLabel(settingName);
+			CreateSpacer();
+			var sliderSetting = GUILayout.HorizontalSlider(
+				(int)Property.GetValue(ModEntry.SettingsInstance),
+				(int)range.Min,
+				(int)range.Max,
+				GUILayout.Width(AbsoluteWidth)
+			);
+			Property.SetValue(ModEntry.SettingsInstance, sliderSetting);
+			CreateLabel($"{(int)Property.GetValue(ModEntry.SettingsInstance):p0}");
+			CreateLabel(settingDescription);
+		}
+		GUILayout.EndHorizontal();
+	}
+
+	private static void CreateSettings()
+	{
+		PropertyInfo[] properties = GetProperties();
+
+		if (properties.Length == 0)
+		{
+			return;
+		}
+
+		foreach (PropertyInfo property in properties)
+		{
+			switch (property.PropertyType.Name)
+			{
+				case "Single":
+					AddFloatSetting(property);
+					break;
+				case "Boolean":
+					AddBoolSetting(property);
+					break;
+				case "Int32":
+					AddIntSetting(property);
+					break;
+			}
+		}
+	}
+
+	private static string GetSettingName(PropertyInfo property)
+	{
+		return (string)SettingStrings[$"{FormatPropertyName(property)}Name"];
+	}
+
+	private static string GetSettingDescription(PropertyInfo property)
+	{
+		return (string)SettingStrings[$"{FormatPropertyName(property)}Description"];
+	}
+
+	private static string FormatPropertyName(PropertyInfo property)
+	{
+		return property.Name;
+	}
+
+	internal static void BuildSettings()
+	{
+		CreateSettings();
+	}
+};

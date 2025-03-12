@@ -1,18 +1,21 @@
 ﻿#region using directives
 
+using VanityCameraTweaks.Framework.Attributes;
 using VanityCameraTweaks.Framework.Database;
 
 #endregion
 
 namespace VanityCameraTweaks.Framework.Integrations.UMM;
 
-public sealed class Settings :
-	UnityModManager.ModSettings,
-	IDrawable
-{
-	[Draw("Zoom Fine Offset", DrawType.Slider, Min = 0f, Max = 1f)] public float ZoomFineOffset = 0f;
+public sealed class Settings : UnityModManager.ModSettings
+{   // TODO: need labels that serve as descriptions for each setting
+	// TODO: need to have localisable strings for each setting
+	[UMMRange(0f, 1f)]
+	[UMMInclude]
+	public float ZoomFineOffset { get; set; } = 0f;
 
-	[Draw("Force Relaxed Posture When Unarmed")] public bool ForceRelaxedPosture = true;
+	[UMMInclude]
+	public bool ForceRelaxedPosture { get; set; } = true;
 
 	public void OnChange()
 	{

@@ -6,14 +6,14 @@ global using UnityEngine;
 global using UnityModManagerNet;
 global using UnityEngine.UI;
 global using HarmonyLib;
+global using Utilities = VanityCameraTweaks.Framework.Classes.Utilities;
 
 #endregion
 
 #region local using directives
 
 using VanityCameraTweaks.Framework.Integrations.UMM;
-using static UnityModManagerNet.UnityModManager;
-
+using System.Diagnostics;
 
 #endregion
 
@@ -25,6 +25,12 @@ internal static class ModEntry
 	internal static Settings SettingsInstance { get; set; } = null!;
 	internal static UnityModManager.ModEntry.ModLogger LoggerInstance { get; set; } = null!;
 	internal static Harmony HarmonyInstance { get; set; } = null!;
+
+	[Conditional("DEBUG")]
+	internal static void DebugLog(string message)
+	{
+		LoggerInstance?.Log(message);
+	}
 
 	internal static void Log(string message)
 	{
@@ -54,7 +60,7 @@ internal static class ModEntry
 
 	internal static void OnGUI(UnityModManager.ModEntry modEntry)
 	{
-		SettingsInstance.Draw(modEntry);
+		// TODO: implement settings
 	}
 
 	internal static void OnSaveGUI(UnityModManager.ModEntry modEntry)
