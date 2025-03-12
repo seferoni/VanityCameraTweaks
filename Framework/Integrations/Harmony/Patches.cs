@@ -23,7 +23,7 @@ internal static class Patches
 	}
 	internal static DollCamera DollCameraInstance { get; set; } = null!;
 	internal static UnitEntityData DollInstance { get; set; } = null!;
-	
+
 
 	[HarmonyPatch(typeof(UnitViewHandsEquipment), "get_ActiveMainHandWeaponStyle")]
 	[HarmonyPostfix]
@@ -92,6 +92,7 @@ internal static class Patches
 			return;
 		}
 
+		ZoomScalar = 0f;
 		DollCameraInstance = cameraInstance;
 
 		if (!ModEntry.ModEnabledState)
