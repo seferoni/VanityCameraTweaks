@@ -1,7 +1,6 @@
 ﻿#region using directives
 
 using VanityCameraTweaks.Framework.Attributes;
-using VanityCameraTweaks.Framework.Database;
 
 #endregion
 

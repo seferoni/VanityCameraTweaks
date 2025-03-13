@@ -6,7 +6,6 @@ using Kingmaker.EntitySystem.Entities;
 using Kingmaker.UI.ServiceWindow;
 using VanityCameraTweaks.Framework.Database;
 using Kingmaker.View.Animation;
-using VanityCameraTweaks.Framework.Attributes;
 
 #endregion
 

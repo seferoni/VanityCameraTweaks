@@ -4,16 +4,20 @@ global using System;
 global using System.Collections.Generic;
 global using UnityEngine;
 global using UnityModManagerNet;
-global using UnityEngine.UI;
 global using HarmonyLib;
+
+#endregion
+
+#region global using aliases
+
 global using Utilities = VanityCameraTweaks.Framework.Classes.Utilities;
 
 #endregion
 
 #region local using directives
 
-using VanityCameraTweaks.Framework.Integrations.UMM;
 using System.Diagnostics;
+using VanityCameraTweaks.Framework.Integrations.UMM;
 
 #endregion
 

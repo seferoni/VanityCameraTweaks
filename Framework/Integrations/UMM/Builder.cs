@@ -1,7 +1,5 @@
 ﻿#region using directives
 
-using Kingmaker.UI.SettingsUI;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Linq;
@@ -15,7 +13,9 @@ namespace VanityCameraTweaks.Framework.Integrations.UMM;
 internal static class Builder
 {
 	private static float AbsoluteWidth { get; } = 300f;
-	private static GUIStyle LabelStyle { get; set; } = null!;
+	private static GUIStyle BoxStyle { get; set; } = null!;
+	private static GUIStyle MajorElementStyle { get; set; } = null!;
+	private static GUIStyle ToggleStyle { get; set; } = null!;
 	private static JObject SettingStrings { get; set; } = null!;
 
 	private static void AddSetting(PropertyInfo property)
@@ -26,18 +26,18 @@ internal static class Builder
 
 		GUILayout.BeginHorizontal();
 		{
-			CreateLabel(settingName);
+			CreateLabel(settingName, MajorElementStyle);
 			CreateSpacer();
 
 			if (property.PropertyType == typeof(bool))
 			{
-				setting = GUILayout.Toggle((bool)settingValue, $"{settingValue}", GUILayout.Width(AbsoluteWidth));
+				setting = GUILayout.Toggle((bool)settingValue, $"{settingValue}", ToggleStyle, GUILayout.Width(AbsoluteWidth));
 			}
 			else
 			{
 				UMMRangeAttribute range = GetRange(property);
 				setting = GUILayout.HorizontalSlider((float)settingValue, range.Min, range.Max, GUILayout.Width(AbsoluteWidth));
-				CreateLabel($"{(property.PropertyType == typeof(int) ? (int)settingValue : (float)settingValue):p0}");
+				CreateLabel($"{(property.PropertyType == typeof(int) ? (int)settingValue : (float)settingValue):p0}", MajorElementStyle);
 			}
 
 			property.SetValue(ModEntry.SettingsInstance, setting);
@@ -48,12 +48,7 @@ internal static class Builder
 
 	internal static void Build()
 	{
-		LabelStyle = new GUIStyle(GUI.skin.label)
-		{
-			fontSize = 12,
-			fontStyle = FontStyle.Bold,
-			normal = { textColor = Color.grey }
-		};
+		InitialiseGUIStyles();
 		InitialiseStrings();
 		CreateSettings();
 	}
@@ -63,14 +58,19 @@ internal static class Builder
 		GUILayout.BeginVertical();
 		{
 			CreateSpacer(5);
-			CreateLabel(settingDescription);
+			GUILayout.Box(settingDescription, BoxStyle, GUILayout.ExpandWidth(false));
 		}
 		GUILayout.EndVertical();
 	}
 
-	private static void CreateLabel(string text)
+	private static void CreateLabel(string text, GUIStyle style = null)
 	{
-		GUILayout.Label(text, LabelStyle, GUILayout.ExpandWidth(false));
+		if (style is null)
+		{
+			style = GUI.skin.label;
+		}
+
+		GUILayout.Label(text, style, GUILayout.ExpandWidth(false));
 	}
 
 	private static void CreateSettings()
@@ -119,6 +119,31 @@ internal static class Builder
 	private static string FormatPropertyName(PropertyInfo property)
 	{
 		return property.Name;
+	}
+
+	internal static void InitialiseGUIStyles()
+	{
+		BoxStyle = new GUIStyle(GUI.skin.box)
+		{
+			fontSize = 13,
+			wordWrap = true,
+			padding = new RectOffset(5, 5, 5, 10),
+			margin = new RectOffset(2, 2, 2, 2),
+			normal = { textColor = Color.grey },
+		};
+
+		MajorElementStyle = new GUIStyle(GUI.skin.label)
+		{
+			fontSize = 13,
+			margin = new RectOffset(2, 2, 2, 2),
+			normal = { textColor = Color.white }
+		};
+
+		ToggleStyle = new GUIStyle(GUI.skin.toggle)
+		{
+			fontSize = 13,
+			normal = { textColor = Color.white }
+		};
 	}
 
 	internal static void InitialiseStrings()

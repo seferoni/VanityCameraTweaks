@@ -3,5 +3,5 @@
 	"ZoomFineOffsetDescription": "Fine & persistent adjustment for the doll camera's zoom. Has no effect outside of the inventory screen.",
 
 	"ForceRelaxedPostureName": "Force Relaxed Posture",
-	"ForceRelaxedPostureDescription": "Forces the current doll to use a more relaxed posture when unarmed. Fixes the raised off-hand/main-hand animation bug. Effects all player instances."
+	"ForceRelaxedPostureDescription": "Forces characters to use a more relaxed posture when unarmed. Fixes the raised off-hand/main-hand animation bug."
 }
