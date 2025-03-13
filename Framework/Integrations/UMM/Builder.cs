@@ -23,18 +23,19 @@ internal static class Builder
 		object setting = null;
 		string settingName = GetSettingName(property);
 		object settingValue = property.GetValue(ModEntry.SettingsInstance);
-
+		
+		CreateSpacer();
 		GUILayout.BeginHorizontal();
 		{
 			CreateLabel(settingName, MajorElementStyle);
-			CreateSpacer();
 
 			if (property.PropertyType == typeof(bool))
 			{
-				setting = GUILayout.Toggle((bool)settingValue, $"{settingValue}", ToggleStyle, GUILayout.Width(AbsoluteWidth));
+				setting = GUILayout.Toggle((bool)settingValue, "", ToggleStyle, GUILayout.Width(AbsoluteWidth));
 			}
 			else
 			{
+				CreateSpacer();
 				UMMRangeAttribute range = GetRange(property);
 				setting = GUILayout.HorizontalSlider((float)settingValue, range.Min, range.Max, GUILayout.Width(AbsoluteWidth));
 				CreateLabel($"{(property.PropertyType == typeof(int) ? (int)settingValue : (float)settingValue):p0}", MajorElementStyle);
@@ -54,13 +55,12 @@ internal static class Builder
 	}
 	internal static void CreateDescriptionElement(PropertyInfo property)
 	{
-		string settingDescription = GetSettingDescription(property);
-		GUILayout.BeginVertical();
+		CreateSpacer();
+		GUILayout.BeginHorizontal();
 		{
-			CreateSpacer(5);
-			GUILayout.Box(settingDescription, BoxStyle, GUILayout.ExpandWidth(false));
+			GUILayout.Box(GetSettingDescription(property), BoxStyle, GUILayout.ExpandWidth(false));
 		}
-		GUILayout.EndVertical();
+		GUILayout.EndHorizontal();
 	}
 
 	private static void CreateLabel(string text, GUIStyle style = null)
@@ -88,7 +88,7 @@ internal static class Builder
 		}
 	}
 
-	private static void CreateSpacer(float pixels = 10)
+	private static void CreateSpacer(float pixels = 8)
 	{
 		GUILayout.Space(pixels);
 	}
@@ -127,6 +127,7 @@ internal static class Builder
 		{
 			fontSize = 13,
 			wordWrap = true,
+			clipping = TextClipping.Overflow,
 			padding = new RectOffset(5, 5, 5, 10),
 			margin = new RectOffset(2, 2, 2, 2),
 			normal = { textColor = Color.grey },
