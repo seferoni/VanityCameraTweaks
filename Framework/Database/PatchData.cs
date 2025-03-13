@@ -1,8 +1,8 @@
 ﻿#region using directives
 
-using Kingmaker.EntitySystem.Entities;
-using Kingmaker.UI.ServiceWindow;
 using Kingmaker.View.Animation;
+using Kingmaker.UI.ServiceWindow;
+using Kingmaker.EntitySystem.Entities;
 
 #endregion
 
@@ -17,7 +17,7 @@ using Range = (float Min, float Max);
 internal static class PatchData
 {
 	// Runtime variables.
-	private static float zoomScalar = 0f;
+	private static float zoomScalar = 1f;
 
 	internal static float ZoomScalar
 	{
@@ -29,7 +29,7 @@ internal static class PatchData
 
 	// Static variables.
 	internal static Vector3 CameraDefaults { get; } = new(999.85f, 586.1129f, 0.987f);
-	internal static Range ZoomFineOffset { get; } = (0f, 0.4f);
+	internal static Range ZoomFineOffset { get; } = (0f, 0.5f);
 	internal static Range CameraNominalY { get; } = (585.4f, 586.2f);
 	internal static Range MeshCameraOrientedY { get; } = (1.5f, 2.3f);
 	internal static Dictionary<string, float> DollCameraZ { get; } = new()

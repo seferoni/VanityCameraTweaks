@@ -1,9 +1,9 @@
 ﻿#region using directives
 
-using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json.Linq;
 using VanityCameraTweaks.Framework.Attributes;
 
 #endregion
@@ -108,17 +108,12 @@ internal static class Builder
 
 	private static string GetSettingName(PropertyInfo property)
 	{
-		return (string)SettingStrings[$"{FormatPropertyName(property)}Name"];
+		return (string)SettingStrings[$"{property.Name}Name"];
 	}
 
 	private static string GetSettingDescription(PropertyInfo property)
 	{
-		return (string)SettingStrings[$"{FormatPropertyName(property)}Description"];
-	}
-
-	private static string FormatPropertyName(PropertyInfo property)
-	{
-		return property.Name;
+		return (string)SettingStrings[$"{property.Name}Description"];
 	}
 
 	internal static void InitialiseGUIStyles()

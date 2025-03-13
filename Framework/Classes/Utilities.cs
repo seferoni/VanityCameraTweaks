@@ -1,11 +1,11 @@
 ﻿#region using directives
 
-using System.Reflection;
 using Kingmaker.Enums;
-using Kingmaker.EntitySystem.Entities;
-using Kingmaker.UI.ServiceWindow;
-using VanityCameraTweaks.Framework.Database;
 using Kingmaker.View.Animation;
+using Kingmaker.UI.ServiceWindow;
+using Kingmaker.EntitySystem.Entities;
+using System.Reflection;
+using VanityCameraTweaks.Framework.Database;
 
 #endregion
 
