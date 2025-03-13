@@ -29,7 +29,7 @@ internal static class ModEntry
 	[Conditional("DEBUG")]
 	internal static void DebugLog(string message)
 	{
-		LoggerInstance?.Log(message);
+		LoggerInstance?.Log($"(Debug) {message}");
 	}
 
 	internal static void Log(string message)
@@ -39,14 +39,14 @@ internal static class ModEntry
 
 	internal static void LogError(Exception exception)
 	{
-		LoggerInstance?.Log($"{exception.ToString()} \n {exception.StackTrace}");
+		LoggerInstance?.Log($"{exception} \n {exception.StackTrace}");
 	}
 
 	internal static bool Load(UnityModManager.ModEntry modEntry)
 	{
 		try
 		{
-			modEntry.OnToggle = OnToggle;
+			AssignListeners(modEntry);
 			Initialise(modEntry);
 		}
 		catch(Exception exception)
@@ -74,7 +74,11 @@ internal static class ModEntry
 		SettingsInstance = Settings.Load<Settings>(modEntry);
 		HarmonyInstance = new Harmony(modEntry.Info.Id);
 		HarmonyInstance.PatchAll();
+	}
 
+	internal static void AssignListeners(UnityModManager.ModEntry modEntry)
+	{
+		modEntry.OnToggle = OnToggle;
 		modEntry.OnSaveGUI = OnSaveGUI;
 		modEntry.OnToggle = OnToggle;
 		modEntry.OnGUI = OnGUI;

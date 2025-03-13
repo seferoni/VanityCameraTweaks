@@ -14,25 +14,36 @@ namespace VanityCameraTweaks.Framework.Integrations.UMM;
 
 internal static class Builder
 {
-	private static JObject SettingStrings { get; set; } = null!;
-	private static GUIStyle LabelStyle { get; set; } = null!;
 	private static float AbsoluteWidth { get; } = 300f;
+	private static GUIStyle LabelStyle { get; set; } = null!;
+	private static JObject SettingStrings { get; set; } = null!;
 
-	internal static void InitialiseStrings()
+	private static void AddSetting(PropertyInfo property)
 	{
-		string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Strings/Settings.json");
-		SettingStrings = JObject.Parse(File.ReadAllText(path));
-	}
+		object setting = null;
+		string settingName = GetSettingName(property);
+		object settingValue = property.GetValue(ModEntry.SettingsInstance);
 
-	internal static void CreateDescriptionElement(PropertyInfo property)
-	{
-		string settingDescription = GetSettingDescription(property);
-		GUILayout.BeginVertical();
+		GUILayout.BeginHorizontal();
 		{
-			CreateSpacer(5);
-			CreateLabel(settingDescription);
+			CreateLabel(settingName);
+			CreateSpacer();
+
+			if (property.PropertyType == typeof(bool))
+			{
+				setting = GUILayout.Toggle((bool)settingValue, $"{settingValue}", GUILayout.Width(AbsoluteWidth));
+			}
+			else
+			{
+				UMMRangeAttribute range = GetRange(property);
+				setting = GUILayout.HorizontalSlider((float)settingValue, range.Min, range.Max, GUILayout.Width(AbsoluteWidth));
+				CreateLabel($"{(property.PropertyType == typeof(int) ? (int)settingValue : (float)settingValue):p0}");
+			}
+
+			property.SetValue(ModEntry.SettingsInstance, setting);
 		}
-		GUILayout.EndVertical();
+		GUILayout.EndHorizontal();
+		CreateDescriptionElement(property);
 	}
 
 	internal static void Build()
@@ -45,6 +56,41 @@ internal static class Builder
 		};
 		InitialiseStrings();
 		CreateSettings();
+	}
+	internal static void CreateDescriptionElement(PropertyInfo property)
+	{
+		string settingDescription = GetSettingDescription(property);
+		GUILayout.BeginVertical();
+		{
+			CreateSpacer(5);
+			CreateLabel(settingDescription);
+		}
+		GUILayout.EndVertical();
+	}
+
+	private static void CreateLabel(string text)
+	{
+		GUILayout.Label(text, LabelStyle, GUILayout.ExpandWidth(false));
+	}
+
+	private static void CreateSettings()
+	{
+		PropertyInfo[] properties = GetProperties();
+
+		if (properties.Length == 0)
+		{
+			return;
+		}
+
+		foreach (PropertyInfo property in properties)
+		{
+			AddSetting(property);
+		}
+	}
+
+	private static void CreateSpacer(float pixels = 10)
+	{
+		GUILayout.Space(pixels);
 	}
 
 	internal static PropertyInfo[] GetProperties()
@@ -60,106 +106,6 @@ internal static class Builder
 		return property.GetCustomAttribute<UMMRangeAttribute>()!;
 	}
 
-	private static void AddFloatSetting(PropertyInfo property)
-	{
-		string settingName = GetSettingName(property);
-		UMMRangeAttribute range = GetRange(property);
-
-		GUILayout.BeginHorizontal();
-		{
-			CreateLabel(settingName);
-			CreateSpacer();
-			var sliderSetting = GUILayout.HorizontalSlider(
-				(float)property.GetValue(ModEntry.SettingsInstance),
-				range.Min,
-				range.Max,
-				GUILayout.Width(AbsoluteWidth)
-			);
-			property.SetValue(ModEntry.SettingsInstance, sliderSetting);
-			CreateLabel($"{(float)property.GetValue(ModEntry.SettingsInstance):p0}");
-		}
-		GUILayout.EndHorizontal();
-		CreateDescriptionElement(property);
-	}
-
-	private static void AddBoolSetting(PropertyInfo property)
-	{
-		string settingName = GetSettingName(property);
-
-		GUILayout.BeginHorizontal();
-		{
-			CreateLabel(settingName);
-			CreateSpacer();
-			bool value = (bool)property.GetValue(ModEntry.SettingsInstance);
-			var toggleSetting = GUILayout.Toggle(
-				value,
-				$"{value}",
-				GUILayout.Width(AbsoluteWidth)
-			);
-			property.SetValue(ModEntry.SettingsInstance, toggleSetting);
-		}
-		GUILayout.EndHorizontal();
-		CreateDescriptionElement(property);
-	}
-
-	private static void CreateSpacer(float pixels = 10)
-	{
-		GUILayout.Space(pixels);
-	}
-
-	private static void CreateLabel(string text)
-	{
-		GUILayout.Label(text, LabelStyle, GUILayout.ExpandWidth(false));
-	}
-
-	private static void AddIntSetting(PropertyInfo property)
-	{
-		string settingName = GetSettingName(property);
-		UMMRangeAttribute range = GetRange(property);
-
-		GUILayout.BeginHorizontal();
-		{
-			CreateLabel(settingName);
-			CreateSpacer();
-			var sliderSetting = GUILayout.HorizontalSlider(
-				(int)property.GetValue(ModEntry.SettingsInstance),
-				(int)range.Min,
-				(int)range.Max,
-				GUILayout.Width(AbsoluteWidth)
-			);
-			property.SetValue(ModEntry.SettingsInstance, sliderSetting);
-			CreateLabel($"{(int)property.GetValue(ModEntry.SettingsInstance):p0}");
-		}
-		GUILayout.EndHorizontal();
-		CreateDescriptionElement(property);
-	}
-
-	private static void CreateSettings()
-	{
-		PropertyInfo[] properties = GetProperties();
-
-		if (properties.Length == 0)
-		{
-			return;
-		}
-
-		foreach (PropertyInfo property in properties)
-		{
-			switch (property.PropertyType.Name)
-			{
-				case "Single":
-					AddFloatSetting(property);
-					break;
-				case "Boolean":
-					AddBoolSetting(property);
-					break;
-				case "Int32":
-					AddIntSetting(property);
-					break;
-			}
-		}
-	}
-
 	private static string GetSettingName(PropertyInfo property)
 	{
 		return (string)SettingStrings[$"{FormatPropertyName(property)}Name"];
@@ -173,5 +119,11 @@ internal static class Builder
 	private static string FormatPropertyName(PropertyInfo property)
 	{
 		return property.Name;
+	}
+
+	internal static void InitialiseStrings()
+	{
+		string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Strings/Settings.json");
+		SettingStrings = JObject.Parse(File.ReadAllText(path));
 	}
 };

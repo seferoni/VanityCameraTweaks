@@ -1,10 +1,10 @@
 ﻿#region using directives
 
+using UnityEngine.EventSystems;
 using Kingmaker.UI.ServiceWindow;
 using Kingmaker.View.Equipment;
 using Kingmaker.View.Animation;
 using Kingmaker.EntitySystem.Entities;
-using UnityEngine.EventSystems;
 using VanityCameraTweaks.Framework.Database;
 
 #endregion
