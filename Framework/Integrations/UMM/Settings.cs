@@ -13,7 +13,7 @@ public sealed class Settings : UnityModManager.ModSettings
 
 	[UMMRange(0f, 1f)]
 	[UMMInclude]
-	public float ZoomFineOffset { get; set; } = 0f;
+	public float ZoomFineOffset { get; set; } = 1f;
 
 	public void OnChange()
 	{

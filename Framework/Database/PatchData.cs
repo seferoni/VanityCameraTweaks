@@ -17,7 +17,7 @@ using Range = (float Min, float Max);
 internal static class PatchData
 {
 	// Runtime variables.
-	private static float zoomScalar = 1f;
+	private static float zoomScalar = 0f;
 
 	internal static float ZoomScalar
 	{

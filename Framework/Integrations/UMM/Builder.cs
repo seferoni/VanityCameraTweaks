@@ -144,7 +144,16 @@ internal static class Builder
 
 	internal static void InitialiseStrings()
 	{
-		string path = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Strings/Settings.json");
-		SettingStrings = JObject.Parse(File.ReadAllText(path));
+		string resourceName = "VanityCameraTweaks.Framework.Strings.Settings.json";
+		Stream resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream(resourceName);
+
+		if (resourceStream == null)
+		{
+			ModEntry.Log("Could not find manifest resource stream for Settings.json.");
+			return;
+		}
+
+		StreamReader reader = new(resourceStream);
+		SettingStrings = JObject.Parse(reader.ReadToEnd());
 	}
 };
