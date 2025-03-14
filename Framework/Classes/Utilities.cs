@@ -32,7 +32,8 @@ internal static class Utilities
 		return -Mathf.Lerp(
 			PatchData.ZoomFineOffset.Min,
 			PatchData.ZoomFineOffset.Max,
-			ModEntry.SettingsInstance.ZoomFineOffset);
+			ModEntry.SettingsInstance.ZoomFineOffset
+		);
 	}
 
 	internal static float GetNormalisedYPosScalar(float yValue)
@@ -40,7 +41,8 @@ internal static class Utilities
 		return Mathf.InverseLerp(
 			PatchData.MeshCameraOrientedY.Min,
 			PatchData.MeshCameraOrientedY.Max,
-			yValue);
+			yValue
+		);
 	}
 
 	internal static float GetCameraYPosByPlayer(UnitEntityData player)
@@ -49,7 +51,8 @@ internal static class Utilities
 		float cameraHeight = Mathf.Lerp(
 			PatchData.CameraNominalY.Min,
 			PatchData.CameraNominalY.Max,
-			yBounds);
+			yBounds
+		);
 		ModEntry.DebugLog($"Got a camera height of {cameraHeight} with a y-scalar of {yBounds}.");
 		return cameraHeight;
 	}
