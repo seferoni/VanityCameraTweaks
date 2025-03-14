@@ -50,7 +50,7 @@ internal static class ModEntry
 	{
 		try
 		{
-			AssignListeners(modEntry);
+			AssignEvents(modEntry);
 			Initialise(modEntry);
 		}
 		catch(Exception exception)
@@ -80,7 +80,7 @@ internal static class ModEntry
 		HarmonyInstance.PatchAll();
 	}
 
-	internal static void AssignListeners(UnityModManager.ModEntry modEntry)
+	internal static void AssignEvents(UnityModManager.ModEntry modEntry)
 	{
 		modEntry.OnToggle = OnToggle;
 		modEntry.OnSaveGUI = OnSaveGUI;
