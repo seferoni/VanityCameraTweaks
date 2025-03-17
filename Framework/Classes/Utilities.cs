@@ -6,6 +6,7 @@ using Kingmaker.UI.ServiceWindow;
 using Kingmaker.EntitySystem.Entities;
 using System.Reflection;
 using VanityCameraTweaks.Framework.Database;
+using Kingmaker.Blueprints;
 
 #endregion
 
@@ -13,9 +14,31 @@ namespace VanityCameraTweaks.Framework.Classes;
 
 internal static class Utilities
 {
-	internal static bool ExceedsSizeConstraints(UnitEntityData player)
+	internal static bool IsViableForZoom(UnitEntityData player)
 	{
-		return player.Descriptor.State.Size >= Size.Large || player.Descriptor.State.Size <= Size.Tiny;
+		if (player.Descriptor.State.Size >= Size.Large || player.Descriptor.State.Size <= Size.Tiny)
+		{
+			return false;
+		}
+
+		var raceBlueprint = player.Descriptor.Progression.Race;
+
+		if (raceBlueprint == null)
+		{
+			return false;
+		}
+
+		if (!PatchData.RaceHeightScalars.ContainsKey(raceBlueprint.RaceId))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	internal static float GetNormalisedYPosScalarByPlayer(UnitEntityData player)
+	{
+		return PatchData.RaceHeightScalars[player.Descriptor.Progression.Race.RaceId];
 	}
 
 	internal static Vector3 GetTranslatedCoordinatesByPlayer(UnitEntityData playerInstance)
@@ -36,24 +59,15 @@ internal static class Utilities
 		);
 	}
 
-	internal static float GetNormalisedYPosScalar(float yValue)
-	{
-		return Mathf.InverseLerp(
-			PatchData.MeshCameraOrientedY.Min,
-			PatchData.MeshCameraOrientedY.Max,
-			yValue
-		);
-	}
-
 	internal static float GetCameraYPosByPlayer(UnitEntityData player)
 	{
-		float yBounds = GetNormalisedYPosScalar(player.View.CameraOrientedBoundsSize.y);
+		float yScalar = GetNormalisedYPosScalarByPlayer(player);
 		float cameraHeight = Mathf.Lerp(
 			PatchData.CameraNominalY.Min,
 			PatchData.CameraNominalY.Max,
-			yBounds
+			yScalar
 		);
-		ModEntry.DebugLog($"Got a camera height of {cameraHeight} with a y-scalar of {yBounds}.");
+		ModEntry.DebugLog($"Got a camera height of {cameraHeight} with a y-scalar of {yScalar}.");
 		return cameraHeight;
 	}
 

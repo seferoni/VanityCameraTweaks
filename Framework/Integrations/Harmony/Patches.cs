@@ -67,9 +67,9 @@ internal static class Patches
 	[HarmonyPostfix]
 	internal static void TranslateDollRoomCamera(UnitEntityData player, DollRoom __instance)
 	{
-		if (Utilities.ExceedsSizeConstraints(player))
+		if (!Utilities.IsViableForZoom(player))
 		{
-			ModEntry.DebugLog("Doll model exceeds size stipulations, aborting execution.");
+			ModEntry.DebugLog("Doll model is not viable for zoom functionality, aborting execution.");
 			return;
 		}
 
@@ -114,6 +114,11 @@ internal static class Patches
 		}
 
 		if (PatchData.DollInstance is null || PatchData.DollCameraInstance is null)
+		{
+			return;
+		}
+
+		if (!Utilities.IsViableForZoom(PatchData.DollInstance))
 		{
 			return;
 		}
