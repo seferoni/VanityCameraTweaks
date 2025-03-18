@@ -23,7 +23,7 @@ internal static class Builder
 		object setting = null;
 		string settingName = GetSettingName(property);
 		object settingValue = property.GetValue(ModEntry.SettingsInstance);
-		
+
 		CreateSpacer();
 		GUILayout.BeginHorizontal();
 		{
@@ -53,6 +53,7 @@ internal static class Builder
 		InitialiseStrings();
 		CreateSettings();
 	}
+
 	internal static void CreateDescriptionElement(PropertyInfo property)
 	{
 		CreateSpacer();
