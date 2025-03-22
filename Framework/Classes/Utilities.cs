@@ -94,8 +94,8 @@ internal static class Utilities
 		);
 	}
 
-	internal static bool IsWeaponAnimationViable(WeaponAnimationStyle animationStyle)
+	internal static bool IsUnarmed(WeaponAnimationStyle animationStyle)
 	{
-		return Array.Exists(PatchData.TargetedAnimations, style => style == animationStyle);
+		return Array.Exists(PatchData.UnarmedAnimations, style => style == animationStyle);
 	}
 };

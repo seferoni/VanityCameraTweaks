@@ -23,22 +23,22 @@ internal static class Patches
 			return;
 		}
 
-		if (!ModEntry.SettingsInstance.ForceRelaxedPosture)
+		if (ModEntry.SettingsInstance.FixAnimationBugs && __result == WeaponAnimationStyle.Fencing)
 		{
+			__result = WeaponAnimationStyle.PiercingOneHanded;
+		}
+
+		if (!Utilities.IsUnarmed(__result))
+		{
+			PatchData.MainHandUnarmed = false;
 			return;
 		}
 
-		if (!Utilities.IsWeaponAnimationViable(__result))
+		if (ModEntry.SettingsInstance.ForceRelaxedPosture && __instance.ActiveOffHandWeaponStyle == WeaponAnimationStyle.None)
 		{
-			return;
+			__result = WeaponAnimationStyle.None;
+			PatchData.MainHandUnarmed = true;
 		}
-
-		if (__instance.ActiveOffHandWeaponStyle != WeaponAnimationStyle.None)
-		{
-			return;
-		}
-
-		__result = WeaponAnimationStyle.None;
 	}
 
 	[HarmonyPatch(typeof(UnitViewHandsEquipment), "get_ActiveOffHandWeaponStyle")]
@@ -50,12 +50,12 @@ internal static class Patches
 			return;
 		}
 
-		if (!ModEntry.SettingsInstance.ForceRelaxedPosture)
+		if (!Utilities.IsUnarmed(__result))
 		{
 			return;
 		}
 
-		if (!Utilities.IsWeaponAnimationViable(__result))
+		if (!ModEntry.SettingsInstance.FixAnimationBugs || !(ModEntry.SettingsInstance.ForceRelaxedPosture && PatchData.MainHandUnarmed))
 		{
 			return;
 		}

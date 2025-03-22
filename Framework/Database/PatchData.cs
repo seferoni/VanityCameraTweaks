@@ -25,6 +25,7 @@ internal static class PatchData
 		get => zoomScalar;
 		set => zoomScalar = Mathf.Clamp(value, 0f, 1f);
 	}
+	internal static bool MainHandUnarmed { get; set; } = false;
 	internal static DollCamera DollCameraInstance { get; set; } = null!;
 	internal static UnitEntityData DollInstance { get; set; } = null!;
 
@@ -50,7 +51,7 @@ internal static class PatchData
 		{ Race.Human, 0.8f },
 		{ Race.Tiefling, 0.8f }
 	};
-	internal static WeaponAnimationStyle[] TargetedAnimations { get; } =
+	internal static WeaponAnimationStyle[] UnarmedAnimations { get; } =
 	[
 		WeaponAnimationStyle.Fist,
 		WeaponAnimationStyle.MartialArts

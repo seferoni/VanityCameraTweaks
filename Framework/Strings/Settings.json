@@ -3,5 +3,8 @@
 	"ZoomFineOffsetDescription": "Increases the doll camera's zoom.",
 
 	"ForceRelaxedPostureName": "Force Relaxed Posture",
-	"ForceRelaxedPostureDescription": "Forces characters to use a more relaxed stance when unarmed. Fixes the raised off-hand/main-hand animation bug."
+	"ForceRelaxedPostureDescription": "Forces characters to use a more relaxed stance when completely unarmed.",
+
+	"FixAnimationBugsName": "Fix Animation Bugs",
+	"FixAnimationBugsDescription": "Fixes the raised off-hand and fencing weapon animation bugs."
 }
